@@ -9,7 +9,7 @@ NEWS_API_KEY = "061a9915bd56414f9075c98eeab90949"
 NEWS_URL = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={NEWS_API_KEY}"
 
 # 🗂 Cache
-cache = {"data": [], "timestamp": 0
+cache = {"data": [], "timestamp": 0}
 
 @router.get("/")
 def get_news():
