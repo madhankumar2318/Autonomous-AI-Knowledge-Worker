@@ -1,9 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
+import { Upload, File, Download, Trash2 } from "lucide-react";
 
 export default function FileUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [uploads, setUploads] = useState<any[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   // 🔹 Fetch uploaded files
   const fetchUploads = async () => {
@@ -23,64 +25,114 @@ export default function FileUpload() {
   // 🔹 Upload file
   const handleUpload = async () => {
     if (!file) return;
+    setUploading(true);
+
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("http://127.0.0.1:8000/upload/", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch("http://127.0.0.1:8000/upload/", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (res.ok) {
-      alert("File uploaded successfully!");
-      setFile(null);
-      fetchUploads();
-    } else {
-      alert("Upload failed!");
+      if (res.ok) {
+        setFile(null);
+        fetchUploads();
+      } else {
+        alert("Upload failed!");
+      }
+    } catch (err) {
+      alert("Upload error!");
+    } finally {
+      setUploading(false);
     }
   };
 
   return (
-    <div className="bg-white shadow-md rounded p-4">
-      <h2 className="text-lg font-bold mb-2">📂 File Upload (CSV / JSON)</h2>
-
+    <div className="space-y-4">
       {/* File Picker */}
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-        className="mb-2"
-      />
-      <button
-        onClick={handleUpload}
-        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-      >
-        Upload
-      </button>
+      <div className="border-2 border-dashed border-light rounded-lg p-6 text-center hover:border-accent transition-colors">
+        <Upload className="w-8 h-8 text-muted mx-auto mb-3" />
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="hidden"
+          id="file-upload"
+          accept=".csv,.json"
+        />
+        <label
+          htmlFor="file-upload"
+          className="cursor-pointer text-sm text-secondary hover:text-primary"
+        >
+          {file ? (
+            <span className="font-medium text-primary">{file.name}</span>
+          ) : (
+            <>
+              <span className="text-accent font-medium">Choose a file</span> or
+              drag and drop
+            </>
+          )}
+        </label>
+        <p className="text-xs text-muted mt-1">CSV or JSON files only</p>
+      </div>
+
+      {file && (
+        <button
+          onClick={handleUpload}
+          disabled={uploading}
+          className="btn btn-primary w-full flex items-center justify-center gap-2"
+        >
+          {uploading ? (
+            <>
+              <div className="spinner"></div>
+              Uploading...
+            </>
+          ) : (
+            <>
+              <Upload className="w-4 h-4" />
+              Upload File
+            </>
+          )}
+        </button>
+      )}
 
       {/* Uploaded Files List */}
-      <h3 className="text-md font-semibold mt-4 mb-2">📑 Uploaded Files</h3>
-      <ul className="space-y-2">
-        {uploads.map((u) => (
-          <li
-            key={u.id}
-            className="flex justify-between items-center border p-2 rounded"
-          >
-            <div>
-              <p className="font-medium">{u.filename}</p>
-              <p className="text-xs text-gray-500">
-                {Math.round(u.size / 1024)} KB • {u.uploaded_at}
-              </p>
-            </div>
-            <a
-              href={`http://127.0.0.1:8000/uploads/${u.filename}`}
-              download
-              className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
-            >
-              Download
-            </a>
-          </li>
-        ))}
-      </ul>
+      {uploads.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-primary mb-3">
+            Uploaded Files
+          </h3>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {uploads.map((u) => (
+              <div
+                key={u.id}
+                className="flex items-center justify-between p-3 bg-surface rounded-lg hover:bg-hover transition-colors"
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <File className="w-4 h-4 text-accent flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm text-primary truncate">
+                      {u.filename}
+                    </p>
+                    <p className="text-xs text-muted">
+                      {Math.round(u.size / 1024)} KB
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={`http://127.0.0.1:8000/uploads/${u.filename}`}
+                  download
+                  className="btn-ghost p-2 rounded-lg hover:bg-accent/10"
+                  title="Download"
+                >
+                  <Download className="w-4 h-4 text-accent" />
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

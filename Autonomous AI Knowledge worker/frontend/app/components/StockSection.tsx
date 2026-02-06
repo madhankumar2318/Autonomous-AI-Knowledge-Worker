@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 export default function StockSection() {
   const [stock, setStock] = useState<any>(null);
@@ -14,19 +15,71 @@ export default function StockSection() {
       });
   }, []);
 
+  if (!stock) {
+    return (
+      <div className="space-y-3">
+        <div className="skeleton h-6 w-24"></div>
+        <div className="skeleton h-8 w-32"></div>
+        <div className="skeleton h-4 w-20"></div>
+      </div>
+    );
+  }
+
+  if (stock.error) {
+    return (
+      <div className="alert alert-error">
+        <p className="text-sm">Error: {stock.error}</p>
+      </div>
+    );
+  }
+
+  const isPositive = stock.change_percent && stock.change_percent.includes("+");
+
   return (
-    <div className="bg-white p-4 rounded shadow h-full">
-      <h2 className="text-lg font-bold mb-2">Stock Market</h2>
-      {stock ? (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
         <div>
-          <p>
-            {stock.symbol}: ${stock.price}
-          </p>
-          <p>{stock.change_percent}</p>
+          <p className="text-xs text-muted mb-1">Symbol</p>
+          <p className="text-lg font-bold text-primary">{stock.symbol}</p>
         </div>
-      ) : (
-        <p>Loading stock...</p>
-      )}
+        {isPositive !== undefined && (
+          <div
+            className={`flex items-center gap-1 px-3 py-1 rounded-full ${isPositive
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+              }`}
+          >
+            {isPositive ? (
+              <TrendingUp className="w-4 h-4" />
+            ) : (
+              <TrendingDown className="w-4 h-4" />
+            )}
+            <span className="text-sm font-semibold">
+              {stock.change_percent}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-surface p-4 rounded-lg">
+        <p className="text-xs text-muted mb-1">Current Price</p>
+        <p className="text-2xl font-bold text-primary">${stock.price}</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-surface p-3 rounded-lg">
+          <p className="text-xs text-muted mb-1">High</p>
+          <p className="text-sm font-semibold text-primary">
+            ${stock.high || "N/A"}
+          </p>
+        </div>
+        <div className="bg-surface p-3 rounded-lg">
+          <p className="text-xs text-muted mb-1">Low</p>
+          <p className="text-sm font-semibold text-primary">
+            ${stock.low || "N/A"}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

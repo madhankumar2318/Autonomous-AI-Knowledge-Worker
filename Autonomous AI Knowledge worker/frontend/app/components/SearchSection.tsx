@@ -1,12 +1,16 @@
 "use client";
 import { useState } from "react";
+import { Search, ExternalLink, AlertCircle } from "lucide-react";
 
 interface SearchResult {
   title: string;
   link: string;
   snippet: string;
 }
-export default function SearchSection({ infiniteScroll = false }: { infiniteScroll?: boolean }) {
+
+export default function SearchSection({
+  infiniteScroll = false,
+}: { infiniteScroll?: boolean }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [page, setPage] = useState(1);
@@ -20,7 +24,9 @@ export default function SearchSection({ infiniteScroll = false }: { infiniteScro
     setError("");
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/search?query=${encodeURIComponent(q)}&page=${pageNum}`);
+      const res = await fetch(
+        `http://127.0.0.1:8000/search?query=${encodeURIComponent(q)}&page=${pageNum}`
+      );
       const data = await res.json();
 
       // Check for API errors
@@ -37,7 +43,9 @@ export default function SearchSection({ infiniteScroll = false }: { infiniteScro
       }
     } catch (err) {
       console.error("Error fetching search results:", err);
-      setError("Failed to connect to search service. Please check if the backend is running.");
+      setError(
+        "Failed to connect to search service. Please check if the backend is running."
+      );
     } finally {
       setLoading(false);
     }
@@ -71,58 +79,84 @@ export default function SearchSection({ infiniteScroll = false }: { infiniteScro
   };
 
   return (
-    <div className="space-y-2 h-full flex flex-col" onScroll={handleScroll}>
-      <form onSubmit={handleSearch} className="flex space-x-2">
-        <input
-          type="text"
-          placeholder="Search Google..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          className="border p-2 rounded flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          disabled={loading}
-        />
+    <div className="space-y-4 h-full flex flex-col">
+      {/* Search Form */}
+      <form onSubmit={handleSearch} className="flex gap-2">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search Google..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            className="input input-with-icon-left"
+            disabled={loading}
+          />
+        </div>
         <button
           type="submit"
           onClick={handleSearch}
           disabled={loading}
-          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn btn-primary"
         >
-          {loading ? "..." : "Search"}
+          {loading ? <div className="spinner"></div> : "Search"}
         </button>
       </form>
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">
-          ⚠️ {error}
+        <div className="alert alert-error flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <span className="text-sm">{error}</span>
         </div>
       )}
 
       {/* Loading State */}
       {loading && results.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-          Searching...
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="spinner mb-3"></div>
+          <p className="text-sm text-muted">Searching...</p>
         </div>
       )}
 
-      {/* Empty State - Only show after search has been performed */}
+      {/* Empty State */}
       {!loading && results.length === 0 && !error && hasSearched && (
-        <div className="text-center py-8 text-gray-500">
-          <p>No results found for "{query}"</p>
-          <p className="text-xs mt-1">Try different keywords</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="w-12 h-12 rounded-full bg-surface flex items-center justify-center mb-3">
+            <Search className="w-6 h-6 text-muted" />
+          </div>
+          <p className="text-sm text-secondary">No results found for "{query}"</p>
+          <p className="text-xs text-muted mt-1">Try different keywords</p>
         </div>
       )}
 
       {/* Results */}
-      <div className="overflow-y-auto space-y-3 flex-1">
+      <div
+        className="overflow-y-auto space-y-3 flex-1"
+        onScroll={handleScroll}
+      >
         {results.map((r, i) => (
-          <div key={i} className="border rounded p-2 bg-white shadow hover:shadow-md transition">
-            <a href={r.link} target="_blank" rel="noopener noreferrer" className="font-bold text-blue-600 hover:underline">
-              {r.title}
+          <div
+            key={i}
+            className="card-compact hover:border-accent transition-all group"
+          >
+            <a
+              href={r.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-2 group"
+            >
+              <div className="flex-1">
+                <h3 className="font-semibold text-sm text-accent group-hover:underline line-clamp-2 mb-1">
+                  {r.title}
+                </h3>
+                <p className="text-xs text-secondary line-clamp-2">
+                  {r.snippet}
+                </p>
+              </div>
+              <ExternalLink className="w-4 h-4 text-muted flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
             </a>
-            <p className="text-sm text-gray-700 mt-1">{r.snippet}</p>
           </div>
         ))}
       </div>

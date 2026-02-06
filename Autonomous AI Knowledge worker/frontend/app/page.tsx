@@ -7,7 +7,7 @@ import ReportSection from "./components/ReportSection";
 import FileUpload from "./components/FileUpload";
 import LoginForm from "./components/LoginForm";
 import HistorySection from "./components/HistorySection";
-import { ArrowUp } from "lucide-react";
+import { LogOut, Brain } from "lucide-react";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,112 +15,128 @@ export default function Home() {
   // 🔐 Login Protection
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="void-panel p-8 w-96 animate-fade-in">
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
           <LoginForm onLoginSuccess={() => setIsLoggedIn(true)} />
         </div>
       </div>
     );
   }
 
-  // Scroll to Top for News Section
-  const scrollToTop = () => {
-    const newsDiv = document.getElementById("news-scroll");
-    if (newsDiv) newsDiv.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* 🌌 Fixed Top Bar - Floating in Space */}
-      <header className="sticky top-0 z-50 void-panel mx-4 mt-4 mb-0 animate-fade-in">
-        <div className="p-4 flex justify-between items-center">
-          <h1 className="text-2xl flex items-center gap-3">
-            <span className="text-accent text-3xl">🧠</span>
-            <span className="glow-text">AUTONOMOUS AI</span>
-          </h1>
-          <div className="flex items-center space-x-4">
-            <HistorySection compact={true} limit={5} />
-            <button
-              onClick={() => setIsLoggedIn(false)}
-              className="btn-void"
-            >
-              LOGOUT
-            </button>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="bg-secondary border-b border-light sticky top-0 z-50 shadow-sm">
+        <div className="max-w-[1400px] mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-primary">
+                  Autonomous AI Knowledge Worker
+                </h1>
+                <p className="text-xs text-muted">
+                  AI-powered insights and research
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <HistorySection compact={true} limit={5} />
+              <button
+                onClick={() => setIsLoggedIn(false)}
+                className="btn btn-ghost flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* 🔸 Main Layout - Floating Modules */}
-      <main className="flex flex-1 p-6 gap-6 overflow-hidden max-w-[1320px] mx-auto w-full">
-        {/* 📰 Left Side - News Terminal */}
-        <section className="w-2/3 flex flex-col void-panel p-6 animate-fade-in">
-          <h2 className="text-xl mb-4 flex items-center gap-2">
-            <span className="text-accent">📡</span>
-            LATEST TRANSMISSIONS
-          </h2>
-
-          <div
-            id="news-scroll"
-            className="flex-1 overflow-y-auto pr-2"
-          >
-            <NewsSection infiniteScroll={true} />
+      {/* Main Content with Independent Scrolling Sections */}
+      <main className="flex-1 max-w-[1400px] mx-auto w-full px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-180px)]">
+          {/* Left Column - News (2/3 width) - Independent Scroll */}
+          <div className="lg:col-span-2 flex flex-col h-full">
+            <div className="card flex flex-col h-full">
+              <div className="flex items-center gap-2 mb-6 flex-shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <span className="text-lg">📰</span>
+                </div>
+                <h2 className="text-xl font-semibold">Latest News</h2>
+              </div>
+              {/* Independent scrolling container for news */}
+              <div className="flex-1 overflow-y-auto pr-2 -mr-2">
+                <NewsSection infiniteScroll={true} />
+              </div>
+            </div>
           </div>
 
-          {/* Scroll to Top - Floating Button */}
-          <button
-            onClick={scrollToTop}
-            className="fixed bottom-6 left-6 void-card p-3 rounded-full glow-accent icon-glow"
-            title="Back to Top"
-          >
-            <ArrowUp size={20} className="text-accent" />
-          </button>
-        </section>
+          {/* Right Column - Controls (1/3 width) - Independent Scroll */}
+          <div className="flex flex-col h-full overflow-y-auto space-y-6 pr-2 -mr-2">
+            {/* Search Section - Takes more space */}
+            <div className="card flex flex-col min-h-[400px]">
+              <div className="flex items-center gap-2 mb-6 flex-shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                  <span className="text-lg">🔍</span>
+                </div>
+                <h2 className="text-xl font-semibold">Search</h2>
+              </div>
+              {/* Search section with its own scroll */}
+              <div className="flex-1 overflow-hidden">
+                <SearchSection infiniteScroll={true} />
+              </div>
+            </div>
 
-        {/* 🔍 Right Side - Control Panels */}
-        <aside className="w-1/3 flex flex-col space-y-6">
-          {/* Google Search Module */}
-          <div className="flex-1 void-panel p-6 overflow-y-auto animate-fade-in" style={{ animationDelay: '100ms' }}>
-            <h2 className="text-xl mb-4 flex items-center gap-2">
-              <span className="text-accent">🔍</span>
-              SEARCH PROTOCOL
-            </h2>
-            <SearchSection infiniteScroll={true} />
-          </div>
-
-          {/* Grid of Control Modules */}
-          <div className="grid grid-rows-3 gap-6 flex-1">
-            <div className="void-card hover:glow-accent animate-fade-in" style={{ animationDelay: '200ms' }}>
-              <h3 className="text-lg mb-3 flex items-center gap-2">
-                <span className="text-accent">📈</span>
-                MARKET DATA
-              </h3>
+            {/* Stock Market */}
+            <div className="card flex-shrink-0">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                  <span className="text-lg">📈</span>
+                </div>
+                <h2 className="text-lg font-semibold">Stock Market</h2>
+              </div>
               <StockSection />
             </div>
 
-            <div className="void-card hover:glow-accent animate-fade-in" style={{ animationDelay: '300ms' }}>
-              <h3 className="text-lg mb-3 flex items-center gap-2">
-                <span className="text-accent">📑</span>
-                REPORTS
-              </h3>
+            {/* Reports */}
+            <div className="card flex-shrink-0">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
+                  <span className="text-lg">📊</span>
+                </div>
+                <h2 className="text-lg font-semibold">Reports</h2>
+              </div>
               <ReportSection />
             </div>
 
-            <div className="void-card hover:glow-accent overflow-y-auto animate-fade-in" style={{ animationDelay: '400ms' }}>
-              <h3 className="text-lg mb-3 flex items-center gap-2">
-                <span className="text-accent">📂</span>
-                FILE SYSTEM
-              </h3>
+            {/* File Upload */}
+            <div className="card flex-shrink-0">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
+                  <span className="text-lg">📁</span>
+                </div>
+                <h2 className="text-lg font-semibold">File Upload</h2>
+              </div>
               <FileUpload />
             </div>
           </div>
-        </aside>
+        </div>
       </main>
 
-      {/* Footer - Minimal Signature */}
-      <footer className="text-center py-4 text-sm text-muted">
-        <p className="telemetry">
-          © {new Date().getFullYear()} — AUTONOMOUS AI WORKER v1.0
-        </p>
+      {/* Footer */}
+      <footer className="border-t border-light bg-secondary mt-auto">
+        <div className="max-w-[1400px] mx-auto px-6 py-6">
+          <div className="text-center">
+            <p className="text-sm text-muted">
+              © {new Date().getFullYear()} Autonomous AI Knowledge Worker. All
+              rights reserved.
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );

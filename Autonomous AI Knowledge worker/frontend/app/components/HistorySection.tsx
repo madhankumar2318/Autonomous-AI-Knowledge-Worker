@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Clock, Activity } from "lucide-react";
 
 interface HistoryItem {
   id: number;
@@ -8,14 +9,14 @@ interface HistoryItem {
 }
 
 interface Props {
-  limit?: number; // show only N items
-  compact?: boolean; // compact view for top bar
+  limit?: number;
+  compact?: boolean;
 }
 
 export default function HistorySection({ limit, compact }: Props) {
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Fetch history from backend
   const fetchHistory = async () => {
     try {
       const res = await fetch("http://127.0.0.1:8000/history/list");
@@ -37,45 +38,79 @@ export default function HistorySection({ limit, compact }: Props) {
   }, []);
 
   if (compact) {
-    // 🔹 Compact top-bar preview
     return (
-      <div className="text-sm">
-        {history.length === 0 ? (
-          <p>No recent activity</p>
-        ) : (
-          <ul className="space-y-1">
-            {history.map((item) => (
-              <li key={item.id} className="truncate">
-                • {item.action}
-              </li>
-            ))}
-          </ul>
+      <div className="relative">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="btn btn-ghost flex items-center gap-2"
+        >
+          <Activity className="w-4 h-4" />
+          Activity
+        </button>
+
+        {isOpen && (
+          <div className="absolute right-0 top-full mt-2 w-80 card shadow-lg z-50">
+            <div className="flex items-center gap-2 mb-4">
+              <Clock className="w-4 h-4 text-accent" />
+              <h3 className="font-semibold text-sm">Recent Activity</h3>
+            </div>
+
+            {history.length === 0 ? (
+              <p className="text-sm text-muted text-center py-4">
+                No recent activity
+              </p>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {history.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-3 bg-surface rounded-lg hover:bg-hover transition-colors"
+                  >
+                    <p className="text-sm text-primary font-medium line-clamp-2">
+                      {item.action}
+                    </p>
+                    <p className="text-xs text-muted mt-1">
+                      {new Date(item.created_at).toLocaleString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     );
   }
 
-  // 🔹 Full dashboard view
   return (
-    <div>
-      <h2 className="text-lg font-bold mb-2">📜 Activity History</h2>
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <Clock className="w-5 h-5 text-accent" />
+        <h2 className="text-lg font-semibold">Activity History</h2>
+      </div>
+
       {history.length === 0 ? (
-        <p className="text-gray-600">No activity yet.</p>
+        <div className="text-center py-8">
+          <Activity className="w-12 h-12 text-muted mx-auto mb-3" />
+          <p className="text-secondary">No activity yet</p>
+        </div>
       ) : (
-        <ul className="space-y-2">
+        <div className="space-y-3">
           {history.map((item) => (
-            <li
+            <div
               key={item.id}
-              className="p-2 bg-gray-100 rounded shadow text-sm"
+              className="card-compact hover:shadow-md transition-all"
             >
-              <strong>{item.action}</strong>
-              <br />
-              <span className="text-xs text-gray-500">
+              <p className="text-sm text-primary font-medium mb-2">
+                {item.action}
+              </p>
+              <div className="flex items-center gap-1 text-xs text-muted">
+                <Clock className="w-3 h-3" />
                 {new Date(item.created_at).toLocaleString()}
-              </span>
-            </li>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
