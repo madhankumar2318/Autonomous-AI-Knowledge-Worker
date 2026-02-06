@@ -16,11 +16,11 @@ import scheduler as scheduler_module  # optional; keep if you have this
 
 app = FastAPI(title="Autonomous AI Knowledge Worker")
 
-# CORS
+# CORS - Allow all origins for development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
-    allow_credentials=True,
+    allow_origins=["*"],  # Allow all origins for development
+    allow_credentials=False,  # Must be False when allow_origins is ["*"]
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -7,7 +7,11 @@ export default function StockSection() {
   useEffect(() => {
     fetch("http://127.0.0.1:8000/stock?symbol=AAPL")
       .then((res) => res.json())
-      .then((data) => setStock(data));
+      .then((data) => setStock(data))
+      .catch((err) => {
+        console.error("Stock fetch error:", err);
+        setStock({ error: err.message });
+      });
   }, []);
 
   return (
