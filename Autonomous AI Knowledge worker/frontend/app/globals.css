@@ -1,0 +1,448 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@600;700;800&display=swap');
+
+/* ========================================
+   🌌 SPACE/VOID DARK UI - COLOR SYSTEM
+   ======================================== */
+
+:root {
+  /* Void Backgrounds */
+  --bg-primary: #05070D;
+  --bg-secondary: #0B1020;
+  --surface: #10172A;
+
+  /* Accent & Highlights */
+  --accent: #00E5FF;
+  --accent-glow: rgba(0, 229, 255, 0.3);
+
+  /* Text */
+  --text-primary: #E6F1FF;
+  --text-muted: #9FB3C8;
+
+  /* Borders & Edges */
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-glow: rgba(0, 229, 255, 0.2);
+
+  /* Shadows */
+  --shadow-deep: 0 20px 60px rgba(0, 0, 0, 0.8);
+  --shadow-float: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 20px 60px rgba(0, 0, 0, 0.8);
+
+  /* Motion */
+  --ease-space: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-slow: 600ms;
+  --duration-base: 400ms;
+}
+
+@theme inline {
+  --font-sans: 'Space Grotesk', var(--font-geist-sans), system-ui, sans-serif;
+  --font-display: 'Orbitron', monospace;
+}
+
+/* ========================================
+   🌐 GLOBAL STYLES
+   ======================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Layered Background with Depth */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 30% 20%, #0B1C3D, transparent 40%),
+    radial-gradient(circle at 80% 70%, #061429, transparent 45%),
+    radial-gradient(circle at 50% 50%, #0B1020, transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Optional: Subtle noise texture for depth */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ========================================
+   🎨 TYPOGRAPHY
+   ======================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 1.75rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+p {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--text-muted);
+}
+
+/* Telemetry-style numbers */
+.telemetry {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+
+/* ========================================
+   🌌 FLOATING SURFACES / PANELS
+   ======================================== */
+
+.void-panel {
+  background: rgba(16, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  box-shadow: var(--shadow-float);
+  border: 1px solid var(--border-subtle);
+  transition: all var(--duration-slow) var(--ease-space);
+  position: relative;
+}
+
+.void-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.void-panel:hover {
+  box-shadow:
+    0 0 0 1px var(--border-glow),
+    0 0 40px rgba(0, 229, 255, 0.1),
+    0 20px 60px rgba(0, 0, 0, 0.9);
+  transform: translateY(-2px);
+}
+
+/* Compact panel variant */
+.void-card {
+  background: rgba(16, 23, 42, 0.5);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: var(--shadow-float);
+  border: 1px solid var(--border-subtle);
+  padding: 24px;
+  transition: all var(--duration-base) var(--ease-space);
+}
+
+.void-card:hover {
+  border-color: var(--border-glow);
+  box-shadow:
+    0 0 0 1px var(--border-glow),
+    0 0 30px rgba(0, 229, 255, 0.08),
+    0 15px 40px rgba(0, 0, 0, 0.8);
+}
+
+/* ========================================
+   🎯 BUTTONS & INTERACTIONS
+   ======================================== */
+
+.btn-void {
+  background: rgba(16, 23, 42, 0.8);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-space);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-void::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-space);
+}
+
+.btn-void:hover {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 20px var(--accent-glow),
+    0 0 40px rgba(0, 229, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-void:hover::before {
+  opacity: 0.1;
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.btn-accent:hover {
+  box-shadow:
+    0 0 30px var(--accent-glow),
+    0 0 60px rgba(0, 229, 255, 0.3);
+}
+
+/* ========================================
+   📜 CUSTOM SCROLLBARS
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.3);
+  border-radius: 4px;
+  transition: background var(--duration-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 229, 255, 0.5);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 229, 255, 0.3) var(--bg-secondary);
+}
+
+/* ========================================
+   ✨ GLOW EFFECTS
+   ======================================== */
+
+.glow-accent {
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.glow-text {
+  text-shadow: 0 0 20px var(--accent-glow);
+  color: var(--accent);
+}
+
+/* Icon glow on hover */
+.icon-glow {
+  transition: all var(--duration-base) var(--ease-space);
+}
+
+.icon-glow:hover {
+  filter: brightness(1.5) drop-shadow(0 0 8px var(--accent));
+}
+
+/* ========================================
+   🎬 ANIMATIONS
+   ======================================== */
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(0, 229, 255, 0.5);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in var(--duration-slow) var(--ease-space);
+}
+
+/* ========================================
+   🎯 UTILITY CLASSES
+   ======================================== */
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.bg-surface {
+  background: var(--surface);
+}
+
+.bg-secondary {
+  background: var(--bg-secondary);
+}
+
+.border-subtle {
+  border: 1px solid var(--border-subtle);
+}
+
+.border-glow {
+  border: 1px solid var(--border-glow);
+}
+
+/* Spacing system (8px base) */
+.space-8 {
+  margin: 8px;
+}
+
+.space-16 {
+  margin: 16px;
+}
+
+.space-24 {
+  margin: 24px;
+}
+
+.space-32 {
+  margin: 32px;
+}
+
+.space-48 {
+  margin: 48px;
+}
+
+/* ========================================
+   📱 RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .void-panel,
+  .void-card {
+    border-radius: 12px;
+  }
+}
+
+/* ========================================
+   🌟 SPECIAL EFFECTS
+   ======================================== */
+
+/* Holographic shimmer effect */
+.holographic {
+  position: relative;
+  overflow: hidden;
+}
+
+.holographic::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg,
+      transparent 30%,
+      rgba(0, 229, 255, 0.1) 50%,
+      transparent 70%);
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%);
+  }
+
+  100% {
+    transform: translateX(100%) translateY(100%);
+  }
+}
